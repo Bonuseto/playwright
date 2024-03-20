@@ -93,7 +93,7 @@ export class DocumentationPage {
   }
 
   async clickOnComboboxWithLabelText (labelText: string, value: string) {
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(2000); // added due to fields not being accesible immediately after load, this is workaround and should be improved
 
     const combobox = this.page.locator(`div[aria-label="Combobox"] > span.form-label:has-text("${labelText}")`);
     await combobox.waitFor({ state: 'visible' });
@@ -108,10 +108,7 @@ export class DocumentationPage {
     const tableLocator = this.page.locator('.veeam-table-wrapper table');
     const firstLinkLocator = tableLocator.locator('a[href^="https://www.veeam.com/"]');
 
-    // await firstLinkLocator.waitFor({ state: 'attached' });
-
-    // await this.page.mouse.move(0, 100);
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(1000);// issue same as with fields, should be improved
     await firstLinkLocator.first().click();
 
     const newPage = await this.page.waitForEvent('popup');
@@ -133,7 +130,7 @@ export class DocumentationPage {
   }
 
   async selectVersion (version: string) {
-    await this.clickOnComboboxWithLabelText('Version:', version);
+    await this.clickOnComboboxWithLabelText('Version:', version);// version is passed manualy, structure of interlinked test data should be created
   }
 
   async selectLanguage (language: Language) {
