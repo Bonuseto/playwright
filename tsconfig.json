@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "strictNullChecks": true,
+      "baseUrl": ".",
+      "target": "es5",
+      "lib": ["es2016", "dom"]
+    },
+    "include": ["**/*.ts"]
+}

@@ -1,42 +1,41 @@
-import { test, expect } from '@playwright/test';
-import { DocumentationPage, Product, Type } from '../documentation-pom/documentation.page';
+import { test, type Page } from '@playwright/test';
+import { DocumentationPage, Language, Product, Type } from '../documentation-pom/documentation.page';
 import { chromium } from 'playwright';
-
-async function runTestWithRetry(description: string, testFunction: () => Promise<void>, maxRetries: number) {
-  let retryCount = 0;
-  while (retryCount < maxRetries) {
-    try {
-      await test(description, async ({}) => {
-        await testFunction();
-      });
-      return; // If the test passes, exit the loop
-    } catch (error) {
-      retryCount++;
-      console.log(`Test failed. Retrying... Attempt ${retryCount}/${maxRetries}`);
-    }
-  }
-  throw new Error(`Test failed after ${maxRetries} retries.`);
-}
 
 test.describe('Documentation Availability Test', () => {
   let documentationPage: DocumentationPage;
-  let browser: any; // Declare browser outside of beforeEach scope
+  let browser: any;
 
   test.beforeEach(async () => {
-    // Launch Chrome browser
-    browser = await chromium.launch({ headless: false }); // or { headless: true } for headless mode
+    browser = await chromium.launch({ headless: false });
     const context = await browser.newContext();
-    const page = await context.newPage();
-    
+    const page: Page = await context.newPage();
+
     documentationPage = new DocumentationPage(page);
     await documentationPage.goto();
-});
-
-  test('Verify Documentation Availability', async ({}, testInfo) => {
-    await documentationPage.clickButton();
-    await documentationPage.testDocPresence(Product.VeeamDataPlatformAdvanced, Type.ProductGuides, 
-    "Veeam Availability Suite 11", "", "https://www.veeam.com/veeam_backup_11_0_user_guide_vsphere_pg.pdf")
-    //testInfo.setTimeout(60000);
   });
 
+  test('Verify Documentation Availability', async () => {
+    await documentationPage.clickButton();
+    await documentationPage.testDocPresence(Product.VeeamDataPlatformAdvanced, Type.ProductGuides,
+      'Veeam Availability Suite 11', Language.NoChanges, 'https://www.veeam.com/veeam_backup_11_0_user_guide_vsphere_pg.pdf');
+  });
+
+  test('Verify Data Platform Essentials 10 in French', async () => {
+    await documentationPage.clickButton();
+    await documentationPage.testDocPresence(Product.VeeamDataPlatformEssentials, Type.Datasheets,
+      'Veeam Backup Essentials 10', Language.French, 'https://www.veeam.com/fr/veeam_essentials_10_0_datasheet_ds.pdf');
+  });
+
+  test('Verify ONE 9.5 Update 4 in Italian', async () => {
+    await documentationPage.clickButton();
+    await documentationPage.testDocPresence(Product.VeeamRecoveryOrchestrator, Type.WhatsNew,
+      'Veeam Availability Orchestrator 3.0', Language.French, 'https://www.veeam.com/fr/whats-new-backup-replication.html');
+  });
+
+  test('Verify FastSCP', async () => {
+    await documentationPage.clickButton();
+    await documentationPage.testDocPresence(Product.VeeamFastSCP, Type.ReleaseNotes,
+      '', Language.NoChanges, 'https://www.veeam.com/veeam_fastscp_3_0_3_release_notes_rn.pdf');
+  });
 });
